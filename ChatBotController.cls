@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 01-23-2025
+ * @last modified on  : 11-20-2024
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
 global with sharing class ChatBotController {
@@ -34,8 +34,8 @@ global with sharing class ChatBotController {
             
             System.debug(endpoint);
             
-            PDFtoConvTest__SecretKey__c secretKey = PDFtoConvTest__SecretKey__c.getInstance('Secret Key');
-            PDFtoConvTest__KnowledgeBase__c article = PDFtoConvTest__KnowledgeBase__c.getInstance('Knowledge Article');
+            PDFtoConv__SecretKey__c secretKey = PDFtoConv__SecretKey__c.getInstance('Secret Key');
+            PDFtoConv__KnowledgeBase__c article = PDFtoConv__KnowledgeBase__c.getInstance('Knowledge Article');
 
             Http http = new Http();
             HttpRequest req = new HttpRequest();

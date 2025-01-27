@@ -2,31 +2,31 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 01-23-2025
+ * @last modified on  : 01-27-2025
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
 public with sharing class Ingest {
     
     @AuraEnabled
     public static void uploadPDF() {
-        // Check for access on PDFtoConvTest__SecretKey__c
-        if (!Schema.sObjectType.PDFtoConvTest__SecretKey__c.isAccessible()) {
+        // Check for access on PDFtoConv__SecretKey__c
+        if (!Schema.sObjectType.PDFtoConv__SecretKey__c.isAccessible()) {
             throw new AuraHandledException('Insufficient permissions to access Secret Key.');
         }
         
-        PDFtoConvTest__SecretKey__c apiKey = PDFtoConvTest__SecretKey__c.getInstance('Secret Key');
+        PDFtoConv__SecretKey__c apiKey = PDFtoConv__SecretKey__c.getInstance('Secret Key');
         if (apiKey == null || String.isBlank(apiKey.KEY__c)) {
             throw new AuraHandledException('Secret Key is missing. Please set the Secret key by following the instructions on the instruction page.');
         }
 
-        // Check for access on PDFtoConvTest__KnowledgeBase__c
-        if (!Schema.sObjectType.PDFtoConvTest__KnowledgeBase__c.isAccessible()) {
+        // Check for access on PDFtoConv__KnowledgeBase__c
+        if (!Schema.sObjectType.PDFtoConv__KnowledgeBase__c.isAccessible()) {
             throw new AuraHandledException('Insufficient permissions to access Knowledge Base.');
         }
         
-        PDFtoConvTest__KnowledgeBase__c article = PDFtoConvTest__KnowledgeBase__c.getInstance('Knowledge Article');
+        PDFtoConv__KnowledgeBase__c article = PDFtoConv__KnowledgeBase__c.getInstance('Knowledge Article');
         if (article == null) {
-            article = new PDFtoConvTest__KnowledgeBase__c();
+            article = new PDFtoConv__KnowledgeBase__c();
             article.Name = 'Knowledge Article';
         } else if (String.isNotBlank(article.File_Source_Id__c)) {
             deletePDF(article.File_Source_Id__c);
@@ -102,8 +102,8 @@ public with sharing class Ingest {
                     article.File_Source_Id__c = (String) responseBody.get('sourceId');
                     
                     // Check if the user has create or update permissions before performing DML
-                    if (Schema.sObjectType.PDFtoConvTest__KnowledgeBase__c.isCreateable() &&
-                        Schema.sObjectType.PDFtoConvTest__KnowledgeBase__c.isUpdateable()) {
+                    if (Schema.sObjectType.PDFtoConv__KnowledgeBase__c.isCreateable() &&
+                        Schema.sObjectType.PDFtoConv__KnowledgeBase__c.isUpdateable()) {
                         upsert article;
                         System.debug('Source ID: ' + (String) responseBody.get('sourceId'));
                     } else {
@@ -121,13 +121,13 @@ public with sharing class Ingest {
     }
 
     public static void deletePDF(String fileSourceId) {
-        // Check for access on PDFtoConvTest__SecretKey__c
-        if (!Schema.sObjectType.PDFtoConvTest__SecretKey__c.isAccessible()) {
+        // Check for access on PDFtoConv__SecretKey__c
+        if (!Schema.sObjectType.PDFtoConv__SecretKey__c.isAccessible()) {
             System.debug('Insufficient permissions to access Secret Key for delete.');
             return;
         }
         
-        PDFtoConvTest__SecretKey__c apiKey = PDFtoConvTest__SecretKey__c.getInstance('Secret Key');
+        PDFtoConv__SecretKey__c apiKey = PDFtoConv__SecretKey__c.getInstance('Secret Key');
         Http http = new Http();
         HttpRequest req = new HttpRequest();
         req.setEndpoint('https://api.chatpdf.com/v1/sources/delete');

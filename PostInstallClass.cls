@@ -2,35 +2,46 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 11-11-2024
+ * @last modified on  : 01-27-2025
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
-global class PostInstallClass implements InstallHandler {	
+global with sharing class PostInstallClass implements InstallHandler {    
     // This method will be executed after the package installation
     global void onInstall(InstallContext context) {
         System.debug('Post installation script started.');
-        User currentUser = [SELECT Id, Email, Name FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1];
 
-        Map<String,String> req = new Map<String,String>();
-        req.put('OrgID',context.organizationId());
-        req.put('Email',currentUser.Email);
-        req.put('Username',currentUser.Name);
+        // Check FLS before querying User fields
+        if (!Schema.sObjectType.User.fields.Email.isAccessible() || 
+            !Schema.sObjectType.User.fields.Name.isAccessible()) {
+            throw new System.NoAccessException();
+        }
+
+        // Query current user information
+        User currentUser = [SELECT Id, Email, Name 
+                            FROM User 
+                            WHERE Id = :UserInfo.getUserId() 
+                            LIMIT 1];
+
+        // Prepare data for the API request
+        Map<String, String> req = new Map<String, String>();
+        req.put('OrgID', context.organizationId());
+        req.put('Email', currentUser.Email);
+        req.put('Username', currentUser.Name);
         String orgData = JSON.serialize(req);
-  
+
         // Trigger asynchronous callout to fetch and save API key
         getAPI(orgData);
     }
     
     @future(callout=true)
-    public static void getAPI(String orgData) {	
+    public static void getAPI(String orgData) {    
         try { 
-            
             Http http = new Http();
             HttpRequest request = new HttpRequest();
 
             String url = 'https://rut.my.salesforce-sites.com/services/apexrest/getAPIKey';
             request.setEndpoint(url);
-            
+
             // Set the HTTP method to POST
             request.setMethod('POST');
             
