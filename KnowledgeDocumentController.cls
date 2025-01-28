@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 01-24-2025
+ * @last modified on  : 01-28-2025
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
 public with sharing class KnowledgeDocumentController {
@@ -121,7 +121,12 @@ public with sharing class KnowledgeDocumentController {
                     throw new System.NoAccessException();
                 }
 
-                else delete docs;
+                // Explicitly check for delete permissions before deleting
+                if (Schema.sObjectType.ContentDocument.isDeletable()) {
+                    delete docs;
+                } else {
+                    throw new System.NoAccessException();
+                }
             }
 
             // Check create access for ContentVersion fields

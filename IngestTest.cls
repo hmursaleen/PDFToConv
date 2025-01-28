@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 01-23-2025
+ * @last modified on  : 11-04-2024
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
 @IsTest
@@ -169,7 +169,7 @@ public class IngestTest {
 
         // Execute the deletePDF method
         Test.startTest();
-        PDFtoConvTest__KnowledgeBase__c article = new PDFtoConvTest__KnowledgeBase__c();
+        PDFtoConv__KnowledgeBase__c article = new PDFtoConv__KnowledgeBase__c();
         article.Name = 'Knowledge Article';
         article.File_Source_Id__c = 'testFileSourceId';
         upsert article;
