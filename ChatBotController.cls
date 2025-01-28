@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 11-20-2024
+ * @last modified on  : 01-28-2025
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
 global with sharing class ChatBotController {
@@ -29,11 +29,17 @@ global with sharing class ChatBotController {
         botRes.add(obj);
 
         try {
-			API_Configuration__mdt config = [SELECT Endpoint__c FROM API_Configuration__mdt WHERE DeveloperName='Chabot_API_Config' LIMIT 1];
-            String endpoint = config.Endpoint__c;
-            
-            System.debug(endpoint);
-            
+            String endpoint;
+            if (Schema.sObjectType.API_Configuration__mdt.isAccessible() && 
+        Schema.sObjectType.API_Configuration__mdt.fields.Endpoint__c.isAccessible()) {
+        
+        API_Configuration__mdt config = [SELECT Endpoint__c FROM API_Configuration__mdt WHERE DeveloperName='Chabot_API_Config' LIMIT 1];
+        endpoint = config.Endpoint__c;
+        
+    } else {
+        throw new System.NoAccessException();
+    }
+			
             PDFtoConv__SecretKey__c secretKey = PDFtoConv__SecretKey__c.getInstance('Secret Key');
             PDFtoConv__KnowledgeBase__c article = PDFtoConv__KnowledgeBase__c.getInstance('Knowledge Article');
 

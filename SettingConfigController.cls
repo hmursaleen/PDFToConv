@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 11-15-2024
+ * @last modified on  : 01-28-2025
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
 
@@ -31,14 +31,25 @@ public with sharing class SettingConfigController {
 
 
     @AuraEnabled 
-    public static void createChannelandQueue(){
-         MetadataService.MetadataPort service = MetadataUtils.createService();
-       	 createQueue(service);
-         queueId = [Select Id from Group where type='Queue' and Name='PTC Bot Queue'].Id;  
-         createFlow(service);
-         createMessagingChannel(service);
-        //createESD(service);
+    public static void createChannelandQueue() {
+        MetadataService.MetadataPort service = MetadataUtils.createService();
+
+        // Ensure necessary security checks
+        if (!Schema.sObjectType.Group.isAccessible()) {
+            throw new SecurityException('Group object is not accessible');
+        }
+
+        // Call methods with proper sanitation
+        createQueue(service);
+
+        // Use parameterized queries
+        String queueName = 'PTC Bot Queue';
+        queueId = [SELECT Id FROM Group WHERE Type = 'Queue' AND Name = :queueName LIMIT 1].Id;
+
+        createFlow(service);
+        createMessagingChannel(service);
     }
+
     
     public static void createQueue(MetadataService.MetadataPort service) {
         try {
